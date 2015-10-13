@@ -1,0 +1,89 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@drawable/back_ac2"
+    android:baselineAligned="true">
+
+    <ImageView
+        android:layout_width="100dp"
+        android:layout_height="60dp"
+        android:id="@+id/imageView2"
+        android:layout_marginTop="0dp"
+        android:layout_gravity="center_horizontal|top"
+        android:scaleType="centerCrop" />
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="2.57"
+        android:measureAllChildren="false">
+
+        <com.example.zhy_horizontalscrollview.CircularSeekBar
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/view"
+            android:layout_gravity="center|left"
+            android:minHeight="250dp"
+            android:minWidth="250dp" />
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center">
+
+            <ImageView
+                android:id="@+id/id_content"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_margin="10dp"
+                android:scaleType="fitXY"
+                android:minHeight="140dp"
+                android:minWidth="140dp"
+                 />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:id="@+id/textView"
+                android:layout_gravity="center_horizontal|bottom"
+                android:textColor="#40ffe4" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:text="0"
+                android:id="@+id/textView2"
+                android:layout_gravity="center"
+                android:textColor="#de24ff"
+                android:textSize="40dp"
+                android:textIsSelectable="true"
+                android:textStyle="bold|italic" />
+        </LinearLayout>
+
+    </FrameLayout>
+
+    <com.example.zhy_horizontalscrollview.MyHorizontalScrollView
+        android:id="@+id/id_horizontalScrollView"
+        android:layout_width="wrap_content"
+        android:layout_height="100dp"
+        android:layout_gravity="center_horizontal|bottom"
+        android:scrollbars="none"
+        android:fillViewport="true"
+        android:clickable="true">
+
+        <LinearLayout
+            android:id="@+id/id_gallery"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:orientation="horizontal" >
+        </LinearLayout>
+    </com.example.zhy_horizontalscrollview.MyHorizontalScrollView>
+
+</LinearLayout><!-- From: file:/E:/andrdio%20studio%20project/zhy_horizontalScrollView/app/src/main/res/layout/activity_main.xml -->

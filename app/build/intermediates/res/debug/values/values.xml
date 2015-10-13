@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- From: file:/E:/andrdio%20studio%20project/CurioRemoteLED/app/src/main/res/values/dimens.xml -->
+    <eat-comment/>
+    <dimen name="activity_horizontal_margin">16dp</dimen>
+    <dimen name="activity_vertical_margin">16dp</dimen>
+    <!-- From: file:/E:/andrdio%20studio%20project/CurioRemoteLED/app/src/main/res/values/strings.xml -->
+    <eat-comment/>
+    <string name="action_settings">Settings</string>
+    <string name="app_name">CurioRemote</string>
+    <string name="ble_not_supported">BLE is not supported</string>
+    <string name="dialog_OK">確定</string>
+    <string name="dialog_Title">錯誤!!</string>
+    <string name="dialog_select_device">請選擇一個裝置</string>
+    <string name="error_bluetooth_not_supported">Bluetooth not supported.</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="progressDialog_Title">請稍候</string>
+    <string name="progressDialog_message">連線中</string>
+    <string name="unknow_Curio_Device">unknow Curio Device</string>
+    <!-- From: file:/E:/andrdio%20studio%20project/CurioRemoteLED/app/src/main/res/values/styles.xml -->
+    <eat-comment/>
+    <style name="AppBaseTheme" parent="android:Theme.Light">
+        <!--
+            Theme customizations available in newer API levels can go in
+            res/values-vXX/styles.xml, while customizations related to
+            backward-compatibility can go here.
+        -->
+    </style>
+    <style name="AppTheme" parent="AppBaseTheme">
+        <!-- All customizations that are NOT specific to a particular API-level can go here. -->
+    </style>
+    <style name="Theme.Translucent" parent="android:style/Theme.Translucent">
+    <item name="android:windowBackground">@android:color/transparent</item>
+    <item name="android:colorForeground">#0000</item>
+    </style>
+</resources>

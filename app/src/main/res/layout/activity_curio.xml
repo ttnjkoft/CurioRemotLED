@@ -1,0 +1,57 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/black"
+    android:orientation="vertical" >
+
+    <FrameLayout
+        android:layout_width="fill_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" >
+
+        <SeekBar
+            android:layout_width="369dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/seekBar"
+            android:layout_gravity="center" />
+
+        <ImageView
+            android:id="@+id/id_content"
+            android:layout_width="78dp"
+            android:layout_height="85dp"
+            android:layout_gravity="left|top"
+            android:layout_margin="10dp"
+            android:scaleType="centerCrop"
+
+            android:background="#000000" />
+
+        <ImageButton
+            android:layout_width="94dp"
+            android:layout_height="94dp"
+            android:id="@+id/imageButton"
+            android:layout_gravity="right|bottom"
+            android:background="#000000"
+            android:src="@mipmap/superlighttablenot"
+            android:scaleType="fitXY" />
+    </FrameLayout>
+
+    <com.example.nono.curioremote.MyHorizontalScrollView
+        android:id="@+id/id_horizontalScrollView"
+        android:layout_width="fill_parent"
+        android:layout_height="150dp"
+        android:layout_gravity="bottom"
+        android:background="@android:color/black"
+        android:scrollbars="none" >
+
+        <LinearLayout
+            android:id="@+id/id_gallery"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:orientation="horizontal"
+            android:focusableInTouchMode="false">
+        </LinearLayout>
+    </com.example.nono.curioremote.MyHorizontalScrollView>
+
+</LinearLayout>
