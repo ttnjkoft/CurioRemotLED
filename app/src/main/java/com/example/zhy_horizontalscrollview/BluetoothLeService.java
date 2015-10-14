@@ -143,6 +143,7 @@ public class BluetoothLeService extends Service {
         }
 
 
+
     };
 
     private void broadcastUpdate(final String action) {
@@ -219,21 +220,6 @@ public Boolean connect(final String address) {
         return false;
     }
 
-    // 以前連接的設備。嘗試重新連接。
-//    if (mBluetoothDeviceAddress != null && address.equals(mBluetoothDeviceAddress)
-//            && mBluetoothGatt != null) {
-//        Log.d(TAG, "Trying to use an existing mBluetoothGatt for connection.");
-//        if (mBluetoothGatt.connect()) {
-//            mConnectionState = STATE_CONNECTING;
-//            if(!mBluetoothGatts.contains(mBluetoothGatt))
-//            {
-//                mBluetoothGatts.add(mBluetoothGatt);}
-//            return true;
-//        } else {
-//            return false;
-//        }
-//    }
-
         final BluetoothDevice device = mBluetoothAdapter.getRemoteDevice(address);
         if (device == null) {
             Log.w(TAG, "Device not found.  Unable to connect.");
@@ -245,15 +231,6 @@ public Boolean connect(final String address) {
         Log.d(TAG, "Trying to create a new connection.");
         mBluetoothDeviceAddress = address;
         mConnectionState = STATE_CONNECTING;
-//        if(!mBluetoothGatts.contains(mBluetoothGatt))
-//        {
-//            mBluetoothGatts.add(mBluetoothGatt);
-////            BluetoothGattService gattserver=mBluetoothGatt.getService(UUID_CRIO_LIGHT_DEVICE);
-////            if(gattserver!=null)
-////                {  if(gattserver.getCharacteristic(UUID_PWM_brightness_level)!=null)
-////                   mGattCharacteristics.add(gattserver.getCharacteristic(UUID_PWM_brightness_level));
-////                }
-//        }
         return true;
     }
 
@@ -311,6 +288,7 @@ public Boolean connect(final String address) {
     {
         return mBluetoothGatt;
     }
+
     public void setCharacteristicNotification(BluetoothGattCharacteristic characteristic,
                                                   boolean enabled) {
         if (mBluetoothAdapter == null || mBluetoothGatt == null) {

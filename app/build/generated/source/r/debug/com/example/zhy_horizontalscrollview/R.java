@@ -94,11 +94,12 @@ public final class R {
         public static final int dialog_OK=0x7f070003;
         public static final int dialog_Title=0x7f070004;
         public static final int dialog_select_device=0x7f070005;
-        public static final int error_bluetooth_not_supported=0x7f070006;
-        public static final int hello_world=0x7f070007;
-        public static final int progressDialog_Title=0x7f070008;
-        public static final int progressDialog_message=0x7f070009;
-        public static final int unknow_Curio_Device=0x7f07000a;
+        public static final int error_ble_conn=0x7f070006;
+        public static final int error_bluetooth_not_supported=0x7f070007;
+        public static final int hello_world=0x7f070008;
+        public static final int progressDialog_Title=0x7f070009;
+        public static final int progressDialog_message=0x7f07000a;
+        public static final int unknow_Curio_Device=0x7f07000b;
     }
     public static final class style {
         /**  API 11 theme customizations can go here. 

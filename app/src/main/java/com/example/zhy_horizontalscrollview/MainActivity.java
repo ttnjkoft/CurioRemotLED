@@ -98,6 +98,7 @@ public class MainActivity extends Activity
 	private	int mDeviceImage;
 	private int mDeviceImageNot;
 	private Boolean firstcall=true;
+	private boolean connTimeout=false;
 	private TextView selectDeviceName;
 	private TextView seekbarValue;
 	private TimerTask task;
@@ -216,19 +217,23 @@ public class MainActivity extends Activity
 					else mBluetoothLeService.connect(dataItem.get(position).getMac());
 					index = position;
 					showpDialog();
+					connTimeout=false;
 					new Thread() {
 						@Override
 						public void run() {
 							try {
+
 								Thread.sleep(10000);
 								if (pDialog.isShowing()) {
 									closepDialog();
+									connTimeout=true;
 								}
 
 
 							} catch (Exception e) {
-								closepDialog();
-
+								if (pDialog.isShowing()) {
+									closepDialog();
+									connTimeout=true;}
 							}
 						}
 					}.start();
@@ -257,7 +262,7 @@ public class MainActivity extends Activity
 					ledStatus = true;
 
 				}
-				else{dialog();}
+				else{dialog(getString(R.string.dialog_select_device));}
 
 			}
 		});
@@ -276,10 +281,10 @@ public class MainActivity extends Activity
 //		mLeDevices.clear();
 	}
 
-	private void dialog() {
+	private void dialog(String message) {
 		if (builder == null) {
 			builder = new AlertDialog.Builder(MainActivity.this);
-			builder.setMessage(getString(R.string.dialog_select_device));
+			builder.setMessage(message);
 			builder.setTitle(getString(R.string.dialog_Title));
 			builder.setPositiveButton(getString(R.string.dialog_OK), new DialogInterface.OnClickListener() {
 				@Override
@@ -303,6 +308,7 @@ public class MainActivity extends Activity
 
 	private void closepDialog(){
 		if(pDialog.isShowing())pDialog.dismiss();
+		if(connTimeout)dialog(getString(R.string.error_ble_conn));
 
 	}
 	private void cancelpDialog(){
@@ -489,6 +495,8 @@ public class MainActivity extends Activity
 						}
 					});
 				}
+
+
 			};
 	private void selectItemdata(int position){
 		Item item=dataItem.get(position);
