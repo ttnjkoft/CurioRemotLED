@@ -35,6 +35,7 @@ import android.util.SparseArray;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.widget.Button;
 import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -70,10 +71,12 @@ public class MainActivity extends Activity
 			"Structo Table","Structo Floor","Superlight Table","Structo Table"};
 	private ArrayList<Item> dataItem=new ArrayList<Item>();
 
-	private Handler mHandler,handler ;
+	private Handler mHandler,handler,rssiHandler;
 	private SensorManager sensorManager;
 	private Vibrator vibrator;
 	private int index=0;
+	private static final int RSSI_MAX_VAUL=94;
+	private static final int SCAN_RSSI_TIME=1500;
 	private static final int SENSOR_SHAKE = 10;
 	private static final int SENSOR_TIME_MIN_GAP = 1500;//ms
 	private static final int curiomaf=0x7dcc;
@@ -101,9 +104,11 @@ public class MainActivity extends Activity
 	private boolean connTimeout=false;
 	private TextView selectDeviceName;
 	private TextView seekbarValue;
-	private TimerTask task;
+	private TimerTask task,rssiTask;
+	private Timer scanTimer,rssiTimer;
+	private Button getrssi;
+	private Runnable rssiRunnable,runnable;
 	private final ServiceConnection mServiceConnection = new ServiceConnection() {
-
 		@Override
 		public void onServiceConnected(ComponentName componentName, IBinder service) {
 			mBluetoothLeService = ((BluetoothLeService.LocalBinder) service).getService();
@@ -148,11 +153,14 @@ public class MainActivity extends Activity
 			finish();
 			return;
 		}
+//		else handler.postDelayed(runnable,10000);
 	}
 
 	private void findViews()
 	{
 		mHandler=new Handler();
+		handler=new Handler();
+		rssiHandler=new Handler();
 		mImg = (ImageView) findViewById(R.id.id_content);
 		mHorizontalScrollView = (MyHorizontalScrollView) findViewById(R.id.id_horizontalScrollView);
 		mAdapter = new HorizontalScrollViewAdapter(this,dataItem);
@@ -164,22 +172,23 @@ public class MainActivity extends Activity
 		selectDeviceName=(TextView)findViewById(R.id.textView);
 		seekbarValue=(TextView)findViewById(R.id.textView2);
 		pDialog=new ProgressDialog(this);
-		handler=new Handler();
+		getrssi= (Button) findViewById(R.id.getrssi);
 
-		final Runnable runnable=new Runnable() {
+		rssiRunnable=new Runnable() {
 			@Override
 			public void run() {
+				getRssi();
+				rssiHandler.postDelayed(this,SCAN_RSSI_TIME);
+			}
+		};
+		runnable=new Runnable() {
+			@Override
+			public void run() {
+				if(dataItem.isEmpty())
 				scanLeDevice(true);
 			}
 		};
 
-		task=new TimerTask() {
-			@Override
-			public void run() {
-				if(dataItem.isEmpty())
-				handler.postDelayed(runnable,10000);
-			}
-		};
 		mImg.setOnLongClickListener(new View.OnLongClickListener() {
 			@Override
 			public boolean onLongClick(View v) {
@@ -193,6 +202,13 @@ public class MainActivity extends Activity
 			}
 		});
 
+		getrssi.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				getRssi();
+
+			}
+		});
 
 
 		//添加滚动回调
@@ -231,9 +247,9 @@ public class MainActivity extends Activity
 
 
 							} catch (Exception e) {
-								if (pDialog.isShowing()) {
-									closepDialog();
-									connTimeout=true;}
+//								if (pDialog.isShowing()) {
+//									closepDialog();
+//									connTimeout=true;}
 							}
 						}
 					}.start();
@@ -277,8 +293,7 @@ public class MainActivity extends Activity
 	@Override
 	protected void onStart() {
 		super.onStart();
-//		dataItem.clear();
-//		mLeDevices.clear();
+
 	}
 
 	private void dialog(String message) {
@@ -308,14 +323,10 @@ public class MainActivity extends Activity
 
 	private void closepDialog(){
 		if(pDialog.isShowing())pDialog.dismiss();
-		if(connTimeout)dialog(getString(R.string.error_ble_conn));
+		if (connTimeout) dialog(getString(R.string.error_ble_conn));
 
 	}
-	private void cancelpDialog(){
-		if(pDialog.isShowing())pDialog.cancel();
 
-
-	}
 	private void setDialogFontSize(Dialog dialog,int size)
 	{
 		Window window = dialog.getWindow();
@@ -372,7 +383,6 @@ public class MainActivity extends Activity
 					selectDeviceName.setText(mDeviceName);
 					dataItem.set(index, item);
 					mSQL.update(mDeviceAddress, mDeviceShake, mDeviceName);
-//					Log.e(TAG, "ActivityResult name=" + mDeviceName + "index=" + index);
 					mHorizontalScrollView.initFirstScreenChildren(dataItem.size());
 
 					break;
@@ -478,6 +488,7 @@ public class MainActivity extends Activity
 		}
 
 	}
+
 	private BluetoothAdapter.LeScanCallback mLeScanCallback =
 			new BluetoothAdapter.LeScanCallback() {
 				@Override
@@ -517,6 +528,7 @@ public class MainActivity extends Activity
 				selectDeviceName.setText(item.getDevicename());
 				ledStatus=item.getLedStatus();
 				characteristic=temgattchar;
+
 			}
 			else
 			{
@@ -529,6 +541,27 @@ public class MainActivity extends Activity
 
 	}
 
+	private void getRssi(){
+		if(mBluetoothLeService.getGatt1()!=null) {
+			int tempRSSI=0;
+			for(int i=0;i<=5;i++) {
+				mBluetoothLeService.getRssi();
+				do {
+					rssiVal = mBluetoothLeService.getRssiVaul();
+				}
+				while (rssiVal == -1);
+				tempRSSI=tempRSSI+rssiVal;
+			}
+			rssiVal=Math.abs((int)tempRSSI/6);
+			if(rssiVal>=RSSI_MAX_VAUL)
+			{
+				myseekbar.setProgress(0);
+				ledStatus=false;
+			}
+//			String text="RSSI Vaul:" + rssiVal;
+//			dialog(text);
+		}
+	}
 
 	private  byte[] getmufid(final BluetoothDevice device,int manufacturerid,byte[] scanRecord){
 		if (scanRecord == null) {
@@ -665,6 +698,8 @@ public class MainActivity extends Activity
 			} else if (BluetoothLeService.ACTION_GATT_DISCONNECTED.equals(action)) {
 				mConnected = false;
 				mBluetoothLeService.close();
+				characteristic=null;
+				rssiHandler.removeCallbacks(rssiRunnable);
 				mBluetoothLeService.connect(dataItem.get(index).getMac());
 
 			} else if (BluetoothLeService.ACTION_GATT_SERVICES_DISCOVERED.equals(action)) {
@@ -673,6 +708,8 @@ public class MainActivity extends Activity
 					{
 						closepDialog();
 						selectItemdata(index);
+						rssiHandler.postDelayed(rssiRunnable,SCAN_RSSI_TIME);
+
 					}
 
 
@@ -712,7 +749,7 @@ public class MainActivity extends Activity
 				ledStatus=true;
 			}
 
-			mBluetoothLeService.writeCharacteristic(characteristic);
+//			mBluetoothLeService.writeCharacteristic(characteristic);
 
 		}
 

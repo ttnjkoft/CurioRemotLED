@@ -13,5 +13,6 @@
     <string name="progressDialog_Title">請稍候</string>
     <string name="unknow_Curio_Device">unknow Curio Device</string>
     <string name="error_ble_conn">連線失敗!!</string>
+    <string name="shake_title">搖動開關</string>
 
 </resources>

@@ -45,6 +45,7 @@ public class BluetoothLeService extends Service {
     private BluetoothAdapter mBluetoothAdapter;
     private String mBluetoothDeviceAddress;
     private BluetoothGatt mBluetoothGatt;
+    private int rssiVaul;
     private List<BluetoothGatt> mBluetoothGatts=new ArrayList<BluetoothGatt>();
 
     private int mConnectionState = STATE_DISCONNECTED;
@@ -136,9 +137,7 @@ public class BluetoothLeService extends Service {
         @Override
         public void onReadRemoteRssi(BluetoothGatt gatt, int rssi, int status) {
             if (status == BluetoothGatt.GATT_SUCCESS) {
-
-
-
+                rssiVaul=rssi;
             }
         }
 
@@ -212,10 +211,14 @@ public class BluetoothLeService extends Service {
         return true;
     }
 
+    public int getRssiVaul(){
+
+        return rssiVaul;
+    }
 
 
-public Boolean connect(final String address) {
-    if (mBluetoothAdapter == null || address == null) {
+    public Boolean connect(final String address) {
+        if (mBluetoothAdapter == null || address == null) {
         Log.w(TAG, "BluetoothAdapter not initialized or unspecified address.");
         return false;
     }
@@ -234,7 +237,14 @@ public Boolean connect(final String address) {
         return true;
     }
 
-
+    public void getRssi(){
+        if (mBluetoothAdapter == null || mBluetoothGatt == null) {
+            Log.w(TAG, "BluetoothAdapter not initialized");
+            return;
+        }
+        rssiVaul=-1;
+        mBluetoothGatt.readRemoteRssi();
+    }
     public void disconnect() {
         if (mBluetoothAdapter == null || mBluetoothGatt == null) {
             Log.w(TAG, "BluetoothAdapter not initialized");
