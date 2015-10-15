@@ -6,6 +6,21 @@
     android:background="@drawable/back_ac2"
     android:baselineAligned="true">
 
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="getrssi"
+        android:id="@+id/getrssi"
+        android:layout_gravity="right"
+        android:visibility="invisible" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:id="@+id/textView3"
+        android:visibility="invisible" />
+
     <ImageView
         android:layout_width="100dp"
         android:layout_height="60dp"
@@ -86,4 +101,4 @@
         </LinearLayout>
     </com.example.zhy_horizontalscrollview.MyHorizontalScrollView>
 
-</LinearLayout><!-- From: file:/E:/andrdio%20studio%20project/zhy_horizontalScrollView/app/src/main/res/layout/activity_main.xml -->
+</LinearLayout><!-- From: file:/D:/GitHub/CurioRemotLED/app/src/main/res/layout/activity_main.xml -->

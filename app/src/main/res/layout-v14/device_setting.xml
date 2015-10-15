@@ -47,4 +47,3 @@
         android:layout_alignStart="@+id/shakeSwitch" />
 
 </RelativeLayout>
-<!-- From: file:/D:/GitHub/CurioRemotLED/app/src/main/res/layout/device_setting.xml -->

@@ -75,8 +75,8 @@ public class MainActivity extends Activity
 	private SensorManager sensorManager;
 	private Vibrator vibrator;
 	private int index=0;
-	private static final int RSSI_MAX_VAUL=94;
-	private static final int SCAN_RSSI_TIME=1500;
+	private static final int RSSI_MAX_VAUL=93;
+	private static final int SCAN_RSSI_TIME=3000;
 	private static final int SENSOR_SHAKE = 10;
 	private static final int SENSOR_TIME_MIN_GAP = 1500;//ms
 	private static final int curiomaf=0x7dcc;
@@ -103,9 +103,7 @@ public class MainActivity extends Activity
 	private Boolean firstcall=true;
 	private boolean connTimeout=false;
 	private TextView selectDeviceName;
-	private TextView seekbarValue;
-	private TimerTask task,rssiTask;
-	private Timer scanTimer,rssiTimer;
+	private TextView seekbarValue,rssivauleTextView;
 	private Button getrssi;
 	private Runnable rssiRunnable,runnable;
 	private final ServiceConnection mServiceConnection = new ServiceConnection() {
@@ -171,6 +169,7 @@ public class MainActivity extends Activity
 		myseekbar=(CircularSeekBar)findViewById(R.id.view);
 		selectDeviceName=(TextView)findViewById(R.id.textView);
 		seekbarValue=(TextView)findViewById(R.id.textView2);
+		rssivauleTextView= (TextView) findViewById(R.id.textView3);
 		pDialog=new ProgressDialog(this);
 		getrssi= (Button) findViewById(R.id.getrssi);
 
@@ -178,7 +177,8 @@ public class MainActivity extends Activity
 			@Override
 			public void run() {
 				getRssi();
-				rssiHandler.postDelayed(this,SCAN_RSSI_TIME);
+				rssivauleTextView.setText("RSSI:" + rssiVal);
+				rssiHandler.postDelayed(this, SCAN_RSSI_TIME);
 			}
 		};
 		runnable=new Runnable() {
@@ -412,9 +412,7 @@ public class MainActivity extends Activity
 		super.onPause();
 		scanLeDevice(false);
 		unregisterReceiver(mGattUpdateReceiver);
-		if (sensorManager != null) {// 取消监听器
-			sensorManager.unregisterListener(sensorEventListener);
-		}
+
 
 	}
 	private SensorEventListener sensorEventListener = new SensorEventListener() {
@@ -458,8 +456,6 @@ public class MainActivity extends Activity
 	@Override
 	protected void onStop() {
 		super.onStop();
-
-
 	}
 
 	@Override
@@ -467,6 +463,9 @@ public class MainActivity extends Activity
 		super.onDestroy();
 		if(mBluetoothLeService.getGatt1()!=null)
 		mBluetoothLeService.close();
+		if (sensorManager != null) {// 取消监听器
+			sensorManager.unregisterListener(sensorEventListener);
+		}
 	}
 
 
@@ -548,7 +547,8 @@ public class MainActivity extends Activity
 	private void getRssi(){
 		if(mBluetoothLeService.getGatt1()!=null) {
 			int tempRSSI=0;
-			for(int i=0;i<=5;i++) {
+			int loopnum=6;
+			for(int i=1;i<=loopnum;i++) {
 				mBluetoothLeService.getRssi();
 				do {
 					rssiVal = mBluetoothLeService.getRssiVaul();
@@ -556,7 +556,7 @@ public class MainActivity extends Activity
 				while (rssiVal == -1);
 				tempRSSI=tempRSSI+rssiVal;
 			}
-			rssiVal=Math.abs((int)tempRSSI/6);
+			rssiVal=Math.abs((int)tempRSSI/loopnum);
 			if(rssiVal>=RSSI_MAX_VAUL && mRssiFlag==1)
 			{
 				myseekbar.setProgress(0);
