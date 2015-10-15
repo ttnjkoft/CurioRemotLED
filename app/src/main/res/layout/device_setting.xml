@@ -22,7 +22,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/shake_title"
-        android:id="@+id/switch1"
+        android:id="@+id/shakeSwitch"
         android:textColor="#ffffff"
         android:layout_below="@+id/editText"
         android:layout_centerHorizontal="true" />
@@ -35,5 +35,15 @@
         android:inputType="textPersonName"
         android:layout_below="@+id/imageView"
         android:layout_centerHorizontal="true" />
+
+    <Switch
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="離開關閉"
+        android:id="@+id/rssiSwitch"
+        android:layout_marginTop="59dp"
+        android:layout_below="@+id/shakeSwitch"
+        android:layout_alignLeft="@+id/shakeSwitch"
+        android:layout_alignStart="@+id/shakeSwitch" />
 
 </RelativeLayout>

@@ -37,7 +37,7 @@ public final class R {
         public static final int tile=0x7f020013;
     }
     public static final class id {
-        public static final int action_settings=0x7f090010;
+        public static final int action_settings=0x7f090011;
         public static final int editText=0x7f09000e;
         public static final int getrssi=0x7f090007;
         public static final int id_content=0x7f090001;
@@ -48,9 +48,10 @@ public final class R {
         public static final int imageButton=0x7f090002;
         public static final int imageView=0x7f09000c;
         public static final int imageView2=0x7f090008;
-        public static final int progressBar=0x7f09000f;
+        public static final int progressBar=0x7f090010;
+        public static final int rssiSwitch=0x7f09000f;
         public static final int seekBar=0x7f090000;
-        public static final int switch1=0x7f09000d;
+        public static final int shakeSwitch=0x7f09000d;
         public static final int textView=0x7f09000a;
         public static final int textView2=0x7f09000b;
         public static final int view=0x7f090009;
@@ -100,8 +101,9 @@ public final class R {
         public static final int hello_world=0x7f070008;
         public static final int progressDialog_Title=0x7f070009;
         public static final int progressDialog_message=0x7f07000a;
-        public static final int shake_title=0x7f07000b;
-        public static final int unknow_Curio_Device=0x7f07000c;
+        public static final int rssi_leave_off=0x7f07000b;
+        public static final int shake_title=0x7f07000c;
+        public static final int unknow_Curio_Device=0x7f07000d;
     }
     public static final class style {
         /**  API 11 theme customizations can go here. 

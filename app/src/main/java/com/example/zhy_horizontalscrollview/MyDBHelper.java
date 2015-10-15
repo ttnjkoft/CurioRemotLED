@@ -12,7 +12,7 @@ public class MyDBHelper extends SQLiteOpenHelper {
     // 資料庫名稱
     public static final String DATABASE_NAME = "gelica.db";
     // 資料庫版本，資料結構改變的時候要更改這個數字，通常是加一
-    public static final int VERSION = 12;
+    public static final int VERSION = 13;
     // 資料庫物件，固定的欄位變數
     private static SQLiteDatabase database;
 
@@ -36,7 +36,7 @@ public class MyDBHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         // 建立應用程式需要的表格
 //        db.execSQL(ItemDAO.CREATE_TABLE);
-        db.execSQL("CREATE TABLE gelicadata (mac TEXT NOT NULL,shake INTEGER NOT NULL,devicename TEXT NOT NULL,PRIMARY KEY (mac ASC));");
+        db.execSQL("CREATE TABLE gelicadata (mac TEXT NOT NULL,shake INTEGER NOT NULL,devicename TEXT NOT NULL,rssiflag INTEGER NOT NULL,PRIMARY KEY (mac ASC));");
     }
 
     @Override

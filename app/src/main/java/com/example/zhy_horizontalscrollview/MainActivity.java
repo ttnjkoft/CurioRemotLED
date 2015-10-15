@@ -97,7 +97,7 @@ public class MainActivity extends Activity
 	private ItemDAO mSQL;
 	private String mDeviceName;
 	private String mDeviceAddress;
-	private	int mDeviceShake;
+	private	int mDeviceShake,mRssiFlag;
 	private	int mDeviceImage;
 	private int mDeviceImageNot;
 	private Boolean firstcall=true;
@@ -197,6 +197,7 @@ public class MainActivity extends Activity
 				intent.putExtra(SettngDeviceActivity.EXTRAS_DEVICE_NAME, dataItem.get(index).getDevicename());
 				intent.putExtra(SettngDeviceActivity.EXTRAS_DEVICE_IMAGE, dataItem.get(index).getImage());
 				intent.putExtra(SettngDeviceActivity.EXTRAS_SHAKE_FLAG, dataItem.get(index).getShake());
+				intent.putExtra(SettngDeviceActivity.EXTRAS_RSSI_FLAG, dataItem.get(index).getRssiflag());
 				startActivityForResult(intent, 77);
 				return true;
 			}
@@ -376,13 +377,15 @@ public class MainActivity extends Activity
 					mDeviceAddress = data.getStringExtra(SettngDeviceActivity.EXTRAS_DEVICE_ADDRESS);
 					mDeviceName = data.getStringExtra(SettngDeviceActivity.EXTRAS_DEVICE_NAME);
 					mDeviceShake = data.getIntExtra(SettngDeviceActivity.EXTRAS_SHAKE_FLAG, 0);
+					mRssiFlag = data.getIntExtra(SettngDeviceActivity.EXTRAS_RSSI_FLAG, 0);
 					item.setDevicename(mDeviceName);
 					item.setShake(mDeviceShake);
+					item.setRssiflag(mRssiFlag);
 					item.setDeviceImage(item.getImagenot());
 					item.setLedStatus(false);
 					selectDeviceName.setText(mDeviceName);
 					dataItem.set(index, item);
-					mSQL.update(mDeviceAddress, mDeviceShake, mDeviceName);
+					mSQL.update(mDeviceAddress, mDeviceShake, mDeviceName,mRssiFlag);
 					mHorizontalScrollView.initFirstScreenChildren(dataItem.size());
 
 					break;
@@ -523,6 +526,7 @@ public class MainActivity extends Activity
 				item.setDeviceImage(item.getImagenot());
 				index=position;
 				mDeviceShake=item.getShake();
+				mRssiFlag=item.getRssiflag();
 				mHorizontalScrollView.initFirstScreenChildren(dataItem.size());
 				mImg.setImageResource(item.getImage());
 				selectDeviceName.setText(item.getDevicename());
@@ -553,7 +557,7 @@ public class MainActivity extends Activity
 				tempRSSI=tempRSSI+rssiVal;
 			}
 			rssiVal=Math.abs((int)tempRSSI/6);
-			if(rssiVal>=RSSI_MAX_VAUL)
+			if(rssiVal>=RSSI_MAX_VAUL && mRssiFlag==1)
 			{
 				myseekbar.setProgress(0);
 				ledStatus=false;
@@ -636,7 +640,7 @@ public class MainActivity extends Activity
 									mDeviceImage=R.mipmap.curioicon;
 									mDeviceImageNot=R.mipmap.curioicon;
 								}
-								mSQL.insert(device.getAddress(), 0, mDeviceName);
+								mSQL.insert(device.getAddress(), 1, mDeviceName,1);
 								Item mdata=mSQL.select(device.getAddress()).get(0);
 								mdata.setDevice(device);
 								mdata.setMac(device.getAddress());

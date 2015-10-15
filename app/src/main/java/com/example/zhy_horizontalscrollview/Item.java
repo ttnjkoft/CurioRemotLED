@@ -14,7 +14,7 @@ public class Item {
     public static final String DEVICE_NAME = "devicename";
     private String mac;
     private String devicename;
-    private int shake;
+    private int shake,rssiflag;
     private int image;
     private int imagenot;
     private int deviceImage;
@@ -24,6 +24,7 @@ public class Item {
 //  -------------------------------------------------------------------------------------------------------
     public String getMac(){return mac;}
     public int getShake(){return shake;}
+    public int getRssiflag(){return rssiflag;}
     public String getDevicename(){return devicename;}
     public BluetoothDevice getDevice(){return device;}
     public int getImage(){return image;}
@@ -36,19 +37,12 @@ public class Item {
 
     public void setMac(String mac){ this.mac=mac;}
     public void setShake(int shake){this.shake=shake;}
+    public void setRssiflag(int rssiflag){this.rssiflag=rssiflag;}
     public void setDevicename(String devicename){this.devicename=devicename;}
     public void setImage(int image){this.image=image;}
     public void setDevice(BluetoothDevice device){this.device=device;}
     public void setImagenot(int imagenot){this.imagenot=imagenot;}
     public void setLedStatus(Boolean ledStatus){this.ledStatus=ledStatus;}
-//    public void setDeviceImage(boolean Inv,int deviceImage)
-//                {
-//                    if(deviceImage<0) { this.deviceImage=deviceImage;}
-//                    else {
-//                            if(Inv){this.deviceImage=imagenot;}
-//                            else {this.deviceImage=image;}
-//                        }
-//                 }
    public void setDeviceImage(int deviceImage){this.deviceImage=deviceImage;}
     public void setmGattCharacteristics(BluetoothGattCharacteristic mGattCharacteristics)
                 {this.mGattCharacteristics=mGattCharacteristics;}

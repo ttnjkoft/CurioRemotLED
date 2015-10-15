@@ -24,6 +24,7 @@ public class ItemDAO {
     public static final String MAC_COLUMN = "mac";
     public static final String DEVICE_NAME_COLUMN = "devicename";
     public static final String SHAKE_COLUMN = "shake";
+    public static final String RSSI_FLAG_COLUMN = "rssiflag";
 
 
 //    public static final String mac;
@@ -57,25 +58,11 @@ public class ItemDAO {
     }
 
     // 新增參數指定的物件
-    public boolean insert(String mac,int shake,String devicename) {
+    public boolean insert(String mac,int shake,String devicename,int rssiflag) {
         // 建立準備新增資料的ContentValues物件
         String sql="insert or ignore into "+TABLE_NAME +" values('"
-                +mac+"',"+shake+",'"+devicename+"')";
+                +mac+"',"+shake+",'"+devicename+"',"+rssiflag+")";
 
-//        ContentValues cv = new ContentValues();
-//        // 加入ContentValues物件包裝的新增資料
-//        // 第一個參數是欄位名稱， 第二個參數是欄位的資料
-//        cv.put(MAC_COLUMN, mac);
-//        cv.put(SHAKE_COLUMN,shake);
-//        cv.put(DEVICE_NAME_COLUMN, devicename);
-
-
-
-        // 新增一筆資料並取得編號
-        // 第一個參數是表格名稱
-        // 第二個參數是沒有指定欄位值的預設值
-        // 第三個參數是包裝新增資料的ContentValues物件
-//        long id = db.insert(TABLE_NAME, null, cv);
         db.execSQL(sql);
 
         // 回傳結果
@@ -84,7 +71,7 @@ public class ItemDAO {
     }
 
     // 修改參數指定的物件
-    public boolean update(String mac,Integer shake,String devicename)
+    public boolean update(String mac,Integer shake,String devicename,Integer rssiflag)
     {
 //        // 建立準備修改資料的ContentValues物件
 //        ContentValues cv = new ContentValues();
@@ -105,8 +92,9 @@ public class ItemDAO {
 
         String sql="UPDATE "+TABLE_NAME +" SET "+
                         SHAKE_COLUMN+" = "+shake+","+
-                        DEVICE_NAME_COLUMN+" ='"+devicename+"' where "+
-                        MAC_COLUMN + " = '" + mac+"'" ;
+                        DEVICE_NAME_COLUMN+" ='"+devicename+"',"+
+                        RSSI_FLAG_COLUMN+" ="+rssiflag+" where "
+                        +MAC_COLUMN + " = '" + mac+"'" ;
         db.execSQL(sql);
         return  true;
     }
@@ -130,6 +118,7 @@ public class ItemDAO {
             result.setMac(cursor.getString(0));
             result.setShake(cursor.getInt(1));
             result.setDevicename(cursor.getString(2));
+            result.setRssiflag(cursor.getInt(3));
             itemlist.add(result);
         }
         cursor.close();
