@@ -411,7 +411,7 @@ public class MainActivity extends Activity
 	protected void onPause() {
 		super.onPause();
 		scanLeDevice(false);
-		unregisterReceiver(mGattUpdateReceiver);
+
 
 
 	}
@@ -466,6 +466,7 @@ public class MainActivity extends Activity
 		if (sensorManager != null) {// 取消监听器
 			sensorManager.unregisterListener(sensorEventListener);
 		}
+		unregisterReceiver(mGattUpdateReceiver);
 	}
 
 

@@ -18,8 +18,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
-        android:id="@+id/textView3"
-        android:visibility="invisible" />
+        android:id="@+id/textView3" />
 
     <ImageView
         android:layout_width="100dp"
