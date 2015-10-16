@@ -53,12 +53,6 @@ public class SettngDeviceActivity extends Activity{
         eText.setText(mDeviceName);
 
     }
-
-
-
-
-
-
     @Override
     public void onBackPressed() {
         Intent intent=getIntent();

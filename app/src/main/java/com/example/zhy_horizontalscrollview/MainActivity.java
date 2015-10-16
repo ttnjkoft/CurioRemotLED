@@ -36,51 +36,22 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.Button;
-import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-import com.example.zhy_horizontalscrollview.MyHorizontalScrollView.CurrentImageChangeListener;
 import com.example.zhy_horizontalscrollview.MyHorizontalScrollView.OnItemClickListener;
 
 public class MainActivity extends Activity
 {
 	private final static String TAG =MainActivity.class.getName();
-	private MyHorizontalScrollView mHorizontalScrollView;
-	private HorizontalScrollViewAdapter mAdapter;
-	private boolean mScanning;
-	private static final long SCAN_PERIOD = 10000;
+	private static final int SCAN_PERIOD = 10000;
 	private static final int REQUEST_ENABLE_BT = 1;
-	private ImageView mImg;
-	private int rssiVal;
-	private int curioIndex;
-	private boolean mConnected = false;
-	private boolean ledStatus=false;
-	private BluetoothAdapter mBluetoothAdapter;
-	private BluetoothLeService mBluetoothLeService;
-	private BluetoothGattCharacteristic characteristic;
-	private CircularSeekBar myseekbar;
-	private AlertDialog.Builder builder;
-	private long startTime;
-	private ProgressDialog pDialog;
-	private int[] imagesnot={R.mipmap.hypetablenot,R.mipmap.hypeclampnot,R.mipmap.hypefloornot,R.mipmap.hypesuspendednot,
-			R.mipmap.structotablenot,R.mipmap.structofloornot,R.mipmap.superlighttablenot,R.mipmap.structotablenot};
-	public static final int[] images={R.mipmap.hypetable,R.mipmap.hypeclamp,R.mipmap.hypefloor,R.mipmap.hypesuspended,
-			R.mipmap.structotable,R.mipmap.structofloor,R.mipmap.superlighttable,R.mipmap.structotable};
-	private String[] devName={"Hype Table","Hype Clamp","Hype Floor","Hype Suspended",
-			"Structo Table","Structo Floor","Superlight Table","Structo Table"};
-	private ArrayList<Item> dataItem=new ArrayList<Item>();
-
-	private Handler mHandler,handler,rssiHandler;
-	private SensorManager sensorManager;
-	private Vibrator vibrator;
-	private int index=0;
+	private static final int SETTING_RESULT=777;
 	private static final int RSSI_MAX_VAUL=93;
-	private static final int SCAN_RSSI_TIME=3000;
-	private static final int SENSOR_SHAKE = 10;
+	private static final int SCAN_RSSI_TIME=2000;
+	private static final int SENSOR_SHAKE = 19;
 	private static final int SENSOR_TIME_MIN_GAP = 1500;//ms
 	private static final int curiomaf=0x7dcc;
-	public static  int txPowerLevel = Integer.MIN_VALUE;
 	private static final int DATA_TYPE_FLAGS = 0x01;
 	private static final int DATA_TYPE_SERVICE_UUIDS_16_BIT_PARTIAL = 0x02;
 	private static final int DATA_TYPE_SERVICE_UUIDS_16_BIT_COMPLETE = 0x03;
@@ -94,18 +65,52 @@ public class MainActivity extends Activity
 	private static final int DATA_TYPE_SERVICE_DATA = 0x16;
 	private static final int DATA_TYPE_MANUFACTURER_SPECIFIC_DATA = 0xFF;
 	private static final int[] imagesvaules={1,2,3,4,5,6,8,10};
-	private ItemDAO mSQL;
-	private String mDeviceName;
-	private String mDeviceAddress;
-	private	int mDeviceShake,mRssiFlag;
-	private	int mDeviceImage;
-	private int mDeviceImageNot;
-	private Boolean firstcall=true;
-	private boolean connTimeout=false;
+
+	//----------------------------------------------------------------------------
+
+	private MyHorizontalScrollView mHorizontalScrollView;
+	private HorizontalScrollViewAdapter mAdapter;
+	private ImageView mImg;
+	private BluetoothAdapter mBluetoothAdapter;
+	private BluetoothLeService mBluetoothLeService;
+	private BluetoothGattCharacteristic characteristic;
+	private CircularSeekBar myseekbar;
+	private AlertDialog.Builder builder;
+	private ProgressDialog pDialog;
+	private Handler mHandler,handler,rssiHandler;
+	private SensorManager sensorManager;
+	private Vibrator vibrator;
+	private ArrayList<Item> dataItem=new ArrayList<Item>();
 	private TextView selectDeviceName;
 	private TextView seekbarValue,rssivauleTextView;
 	private Button getrssi;
 	private Runnable rssiRunnable,runnable;
+	private ItemDAO mSQL;
+
+
+	private boolean mScanning;
+	private boolean mConnected = false;
+	private boolean ledStatus=false;
+	private boolean firstcall=true;
+	private boolean connTimeout=false;
+	private long startTime;
+	private int rssiVal;
+	private int curioIndex;
+	private int index=0;
+	private	int mDeviceShake,mRssiFlag;
+	private	int mDeviceImage;
+	private int mDeviceImageNot;
+	private int txPowerLevel;
+	private String mDeviceName;
+	private String mDeviceAddress;
+
+	private int[] imagesnot={R.mipmap.hypetablenot,R.mipmap.hypeclampnot,R.mipmap.hypefloornot,R.mipmap.hypesuspendednot,
+			R.mipmap.structotablenot,R.mipmap.structofloornot,R.mipmap.superlighttablenot,R.mipmap.structotablenot};
+	private int[] images={R.mipmap.hypetable,R.mipmap.hypeclamp,R.mipmap.hypefloor,R.mipmap.hypesuspended,
+			R.mipmap.structotable,R.mipmap.structofloor,R.mipmap.superlighttable,R.mipmap.structotable};
+	private String[] devName={"Hype Table","Hype Clamp","Hype Floor","Hype Suspended",
+			"Structo Table","Structo Floor","Superlight Table","Structo Table"};
+
 	private final ServiceConnection mServiceConnection = new ServiceConnection() {
 		@Override
 		public void onServiceConnected(ComponentName componentName, IBinder service) {
@@ -133,25 +138,67 @@ public class MainActivity extends Activity
 		Intent gattServiceIntent = new Intent(this, BluetoothLeService.class);
 		bindService(gattServiceIntent, mServiceConnection, BIND_AUTO_CREATE);
 	}
-
-	private void checkBle()
-	{
-		// 檢查手機硬體是否為BLE裝置
-		if (!getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
-			Toast.makeText(this, R.string.ble_not_supported, Toast.LENGTH_SHORT).show();
-			finish();
+	@Override
+	protected void onResume() {
+		super.onResume();
+		if (!mBluetoothAdapter.isEnabled()) {
+			if (!mBluetoothAdapter.isEnabled()) {
+				Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+				startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
+			}
 		}
-		//初始藍牙Adapter
-		final BluetoothManager bluetoothManager =
-				(BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
-		mBluetoothAdapter = bluetoothManager.getAdapter();
-		// 檢查手機使否開啟藍芽裝置
-		if (mBluetoothAdapter == null) {
-			Toast.makeText(this, R.string.error_bluetooth_not_supported, Toast.LENGTH_SHORT).show();
+		else scanLeDevice(true);
+		registerReceiver(mGattUpdateReceiver, makeGattUpdateIntentFilter());
+
+	}
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		if (requestCode == SETTING_RESULT){
+			switch (resultCode) {
+				case Activity.RESULT_OK:
+					Item item = dataItem.get(index);
+					mDeviceAddress = data.getStringExtra(SettngDeviceActivity.EXTRAS_DEVICE_ADDRESS);
+					mDeviceName = data.getStringExtra(SettngDeviceActivity.EXTRAS_DEVICE_NAME);
+					mDeviceShake = data.getIntExtra(SettngDeviceActivity.EXTRAS_SHAKE_FLAG, 0);
+					mRssiFlag = data.getIntExtra(SettngDeviceActivity.EXTRAS_RSSI_FLAG, 0);
+					item.setDevicename(mDeviceName);
+					item.setShake(mDeviceShake);
+					item.setRssiflag(mRssiFlag);
+					item.setDeviceImage(item.getImagenot());
+					item.setLedStatus(false);
+					selectDeviceName.setText(mDeviceName);
+					dataItem.set(index, item);
+					mSQL.update(mDeviceAddress, mDeviceShake, mDeviceName,mRssiFlag);
+					mHorizontalScrollView.initFirstScreenChildren(dataItem.size());
+					break;
+				default:
+					break;
+			}
+		}
+		else if (requestCode == REQUEST_ENABLE_BT && resultCode == Activity.RESULT_CANCELED) {
 			finish();
 			return;
 		}
-//		else handler.postDelayed(runnable,10000);
+		else if(requestCode ==REQUEST_ENABLE_BT && resultCode == Activity.RESULT_OK)
+		{
+			scanLeDevice(true);
+			return;
+		}
+	}
+	@Override
+	protected void onPause() {
+		super.onPause();
+		scanLeDevice(false);
+	}
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+		if(mBluetoothLeService.getGatt1()!=null)
+			mBluetoothLeService.close();
+		if (sensorManager != null) {
+			sensorManager.unregisterListener(sensorEventListener);
+		}
+		unregisterReceiver(mGattUpdateReceiver);
 	}
 
 	private void findViews()
@@ -167,6 +214,7 @@ public class MainActivity extends Activity
 		vibrator = (Vibrator) getSystemService(VIBRATOR_SERVICE);
 		mSQL=new ItemDAO(this);
 		myseekbar=(CircularSeekBar)findViewById(R.id.view);
+		myseekbar.setProgress(100);
 		selectDeviceName=(TextView)findViewById(R.id.textView);
 		seekbarValue=(TextView)findViewById(R.id.textView2);
 		rssivauleTextView= (TextView) findViewById(R.id.textView3);
@@ -185,7 +233,7 @@ public class MainActivity extends Activity
 			@Override
 			public void run() {
 				if(dataItem.isEmpty())
-				scanLeDevice(true);
+					scanLeDevice(true);
 			}
 		};
 
@@ -198,7 +246,7 @@ public class MainActivity extends Activity
 				intent.putExtra(SettngDeviceActivity.EXTRAS_DEVICE_IMAGE, dataItem.get(index).getImage());
 				intent.putExtra(SettngDeviceActivity.EXTRAS_SHAKE_FLAG, dataItem.get(index).getShake());
 				intent.putExtra(SettngDeviceActivity.EXTRAS_RSSI_FLAG, dataItem.get(index).getRssiflag());
-				startActivityForResult(intent, 77);
+				startActivityForResult(intent, SETTING_RESULT);
 				return true;
 			}
 		});
@@ -207,30 +255,18 @@ public class MainActivity extends Activity
 			@Override
 			public void onClick(View view) {
 				getRssi();
-
 			}
 		});
 
 
-		//添加滚动回调
-		mHorizontalScrollView
-				.setCurrentImageChangeListener(new CurrentImageChangeListener() {
-					@Override
-					public void onCurrentImgChanged(int position,
-													View viewIndicator) {
 
-					}
-				});
-
-
-		//添加点击回调
 		mHorizontalScrollView.setOnItemClickListener(new OnItemClickListener() {
 
 			@Override
 			public void onClick(View view, int position) {
 				if (position != index) {
 					if(mBluetoothLeService.getGatt1()!=null)
-					mBluetoothLeService.disconnect();
+						mBluetoothLeService.disconnect();
 					else mBluetoothLeService.connect(dataItem.get(position).getMac());
 					index = position;
 					showpDialog();
@@ -239,14 +275,11 @@ public class MainActivity extends Activity
 						@Override
 						public void run() {
 							try {
-
 								Thread.sleep(10000);
 								if (pDialog.isShowing()) {
 									closepDialog();
 									connTimeout=true;
 								}
-
-
 							} catch (Exception e) {
 //								if (pDialog.isShowing()) {
 //									closepDialog();
@@ -255,48 +288,43 @@ public class MainActivity extends Activity
 						}
 					}.start();
 				} else selectItemdata(position);
-
 			}
 		});
 
 		myseekbar.setSeekBarChangeListener(new CircularSeekBar.OnSeekChangeListener() {
 			@Override
 			public void onProgressChange(CircularSeekBar view, int newProgress) {
-
 //				if (newProgress <= 10) newProgress = 10;
-				seekbarValue.setText(newProgress+"%");
-				byte[] value = new byte[10];
-				value[0] = (byte) 0x00;
-				StringBuilder sb = new StringBuilder();
-				sb.append(Integer.toHexString(newProgress));
-				if (sb.length() < 2) {
-					sb.insert(0, '0'); // pad with leading zero if needed
-				}
-				if (characteristic != null) {
-					String hex = sb.toString();
-					characteristic.setValue(hex2byte(hex.getBytes()));
-					mBluetoothLeService.writeCharacteristic(characteristic);
-					ledStatus = true;
-
-				}
-				else{dialog(getString(R.string.dialog_select_device));}
-
+				setLEDlevel(newProgress);
 			}
 		});
 
 		if (sensorManager != null) {// 注册监听器
-			sensorManager.registerListener(sensorEventListener, sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_NORMAL);
+			sensorManager.registerListener(sensorEventListener,
+					sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),
+					SensorManager.SENSOR_DELAY_NORMAL);
 			// 第一个参数是Listener，第二个参数是所得传感器类型，第三个参数值获取传感器信息的频率
 		}
 
 	}
-
-	@Override
-	protected void onStart() {
-		super.onStart();
-
+	private void checkBle()
+	{
+		// 檢查手機硬體是否為BLE裝置
+		if (!getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
+			Toast.makeText(this, R.string.ble_not_supported, Toast.LENGTH_SHORT).show();
+			finish();
+		}
+		//初始藍牙Adapter
+		final BluetoothManager bluetoothManager =
+				(BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
+		mBluetoothAdapter = bluetoothManager.getAdapter();
+		// 檢查手機使否開啟藍芽裝置
+		if (mBluetoothAdapter == null) {
+			Toast.makeText(this, R.string.error_bluetooth_not_supported, Toast.LENGTH_SHORT).show();
+			finish();
+			return;
+		}
 	}
-
 	private void dialog(String message) {
 		if (builder == null) {
 			builder = new AlertDialog.Builder(MainActivity.this);
@@ -321,13 +349,11 @@ public class MainActivity extends Activity
 		pDialog.show();
 		setDialogFontSize(pDialog, 22);
 	}
-
 	private void closepDialog(){
 		if(pDialog.isShowing())pDialog.dismiss();
 		if (connTimeout) dialog(getString(R.string.error_ble_conn));
 
 	}
-
 	private void setDialogFontSize(Dialog dialog,int size)
 	{
 		Window window = dialog.getWindow();
@@ -351,70 +377,6 @@ public class MainActivity extends Activity
 
 		}
 	}
-
-	@Override
-	protected void onResume() {
-		super.onResume();
-		if (!mBluetoothAdapter.isEnabled()) {
-			if (!mBluetoothAdapter.isEnabled()) {
-				Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-				startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
-			}
-		}
-		else scanLeDevice(true);
-		registerReceiver(mGattUpdateReceiver, makeGattUpdateIntentFilter());
-
-
-
-	}
-
-	@Override
-	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		if (requestCode == 77){
-			switch (resultCode) {
-				case Activity.RESULT_OK:
-					Item item = dataItem.get(index);
-					mDeviceAddress = data.getStringExtra(SettngDeviceActivity.EXTRAS_DEVICE_ADDRESS);
-					mDeviceName = data.getStringExtra(SettngDeviceActivity.EXTRAS_DEVICE_NAME);
-					mDeviceShake = data.getIntExtra(SettngDeviceActivity.EXTRAS_SHAKE_FLAG, 0);
-					mRssiFlag = data.getIntExtra(SettngDeviceActivity.EXTRAS_RSSI_FLAG, 0);
-					item.setDevicename(mDeviceName);
-					item.setShake(mDeviceShake);
-					item.setRssiflag(mRssiFlag);
-					item.setDeviceImage(item.getImagenot());
-					item.setLedStatus(false);
-					selectDeviceName.setText(mDeviceName);
-					dataItem.set(index, item);
-					mSQL.update(mDeviceAddress, mDeviceShake, mDeviceName,mRssiFlag);
-					mHorizontalScrollView.initFirstScreenChildren(dataItem.size());
-
-					break;
-				default:
-					break;
-			}
-		}
-		else if (requestCode == REQUEST_ENABLE_BT && resultCode == Activity.RESULT_CANCELED) {
-			finish();
-			return;
-		}
-		else if(requestCode ==REQUEST_ENABLE_BT && resultCode == Activity.RESULT_OK)
-		{
-			scanLeDevice(true);
-			return;
-		}
-
-
-//		super.onActivityResult(requestCode, resultCode, data);
-	}
-
-	@Override
-	protected void onPause() {
-		super.onPause();
-		scanLeDevice(false);
-
-
-
-	}
 	private SensorEventListener sensorEventListener = new SensorEventListener() {
 		@Override
 		public void onSensorChanged(SensorEvent event) {
@@ -425,7 +387,7 @@ public class MainActivity extends Activity
 			float z = values[2]; // z轴方向的重力加速度，向上为正
 //			Log.i(TAG, "x轴方向的重力加速度" + x + "；y轴方向的重力加速度" + y + "；z轴方向的重力加速度" + z);
 			// 一般在这三个方向的重力加速度达到40就达到了摇晃手机的状态。
-			int medumValue = 19;// 三星 i9250怎么晃都不会超过20，没办法，只设置19了
+			int medumValue = SENSOR_SHAKE;// 三星 i9250怎么晃都不会超过20，没办法，只设置19了
 			if(mDeviceShake==1){
 				if (Math.abs(x) > medumValue || Math.abs(y) > medumValue || Math.abs(z) > medumValue) {
 
@@ -434,6 +396,7 @@ public class MainActivity extends Activity
 						long endTime=System.currentTimeMillis();
 							if((endTime-startTime)>=SENSOR_TIME_MIN_GAP)
 							{
+								ledStatus=dataItem.get(index).getLedStatus();
 								vibrator.vibrate(100);
 								if (ledStatus)turnled(true);
 								else turnled(false);
@@ -452,66 +415,6 @@ public class MainActivity extends Activity
 		}
 
 	};
-
-	@Override
-	protected void onStop() {
-		super.onStop();
-	}
-
-	@Override
-	protected void onDestroy() {
-		super.onDestroy();
-		if(mBluetoothLeService.getGatt1()!=null)
-		mBluetoothLeService.close();
-		if (sensorManager != null) {// 取消监听器
-			sensorManager.unregisterListener(sensorEventListener);
-		}
-		unregisterReceiver(mGattUpdateReceiver);
-	}
-
-
-
-
-	private void scanLeDevice(final boolean enable) {
-
-		if (enable) {
-			// Stops scanning after a pre-defined scan period.
-			mHandler.postDelayed(new Runnable() {
-				@Override
-				public void run() {
-					mScanning = false;
-					mBluetoothAdapter.stopLeScan(mLeScanCallback);
-				}
-			}, SCAN_PERIOD);
-			mScanning = true;
-			mBluetoothAdapter.startLeScan(mLeScanCallback);
-		} else {
-			mScanning = false;
-			mBluetoothAdapter.stopLeScan(mLeScanCallback);
-		}
-
-	}
-
-	private BluetoothAdapter.LeScanCallback mLeScanCallback =
-			new BluetoothAdapter.LeScanCallback() {
-				@Override
-				public void onLeScan(final BluetoothDevice device, int rssi, final byte[] scanRecord) {
-					runOnUiThread(new Runnable() {
-						@Override
-						public void run()
-						{
-							//如果找到的是curio的裝置就連接裝置,並取得控制光源的服務
-							if (getmufid(device, curiomaf, scanRecord) != null)
-							{
-								if(dataItem.size()==1)
-								mBluetoothLeService.connect(device.getAddress());
-							}
-						}
-					});
-				}
-
-
-			};
 	private void selectItemdata(int position){
 		Item item=dataItem.get(position);
 		BluetoothGatt gat=mBluetoothLeService.getGatt1();
@@ -544,7 +447,25 @@ public class MainActivity extends Activity
 		}
 
 	}
+	private void setLEDlevel(int leDlevel){
+		seekbarValue.setText(leDlevel+"%");
+		double tt=leDlevel*1.27;
+		int led=(int)tt;
+		StringBuilder sb = new StringBuilder();
+		sb.append(Integer.toHexString(led));
+		if (sb.length() < 2) {
+			sb.insert(0, '0'); // pad with leading zero if needed
+		}
+		if (characteristic != null) {
+			String hex = sb.toString();
+			characteristic.setValue(hex2byte(hex.getBytes()));
+			mBluetoothLeService.writeCharacteristic(characteristic);
+			ledStatus = true;
 
+		}
+		else{dialog(getString(R.string.dialog_select_device));}
+
+	}
 	private void getRssi(){
 		if(mBluetoothLeService.getGatt1()!=null) {
 			int tempRSSI=0;
@@ -560,15 +481,13 @@ public class MainActivity extends Activity
 			rssiVal=Math.abs((int)tempRSSI/loopnum);
 			if(rssiVal>=RSSI_MAX_VAUL && mRssiFlag==1)
 			{
-				myseekbar.setProgress(0);
+				setLEDlevel(0);
 				ledStatus=false;
 			}
-//			String text="RSSI Vaul:" + rssiVal;
-//			dialog(text);
+			else setLEDlevel(myseekbar.getProgress());
 		}
 	}
-
-	private  byte[] getmufid(final BluetoothDevice device,int manufacturerid,byte[] scanRecord){
+	private byte[] getmufid(final BluetoothDevice device,int manufacturerid,byte[] scanRecord){
 		if (scanRecord == null) {
 			return null;
 		}
@@ -616,15 +535,12 @@ public class MainActivity extends Activity
 					case DATA_TYPE_MANUFACTURER_SPECIFIC_DATA:
 						//curio的manufacturerID是0x7dcc
 						//byte格式:FF,CC,7D,目前pwm值(low),目前pwm值(hight),BoardType
-
 						int manufacturerId = ((scanRecord[currentPos + 1] & 0xFF) << 8)
 								+ (scanRecord[currentPos] & 0xFF);
-
 						byte[] manufacturerDataBytes = extractBytes(scanRecord, currentPos + 2,
 								dataLength - 2);
 						if(manufacturerId==manufacturerid)
 						{
-
 							if(find_item(device)==null)
 							{
 								//尋找查到的image值位於圖的第幾個index
@@ -674,14 +590,12 @@ public class MainActivity extends Activity
 		}
 
 	}
-
 	private static byte[] extractBytes(byte[] scanRecord, int start, int length) {
 		byte[] bytes = new byte[length];
 		System.arraycopy(scanRecord, start, bytes, 0, length);
 		return bytes;
 	}
-
-	public int find(int[] array, int value)  //找指定值位於陣列的那個位置
+	private int find(int[] array, int value)  //找指定值位於陣列的那個位置
 	{
 		int temp=-1;
 		for(int i=0; i<array.length; i++) {
@@ -691,40 +605,6 @@ public class MainActivity extends Activity
 		return temp;
 
 	}
-		//廣播
-	private final BroadcastReceiver mGattUpdateReceiver = new BroadcastReceiver() {
-		@Override
-		public void onReceive(Context context, Intent intent) {
-			final String action = intent.getAction();
-			if (BluetoothLeService.ACTION_GATT_CONNECTED.equals(action)) {
-				mConnected = true;
-
-
-			} else if (BluetoothLeService.ACTION_GATT_DISCONNECTED.equals(action)) {
-				mConnected = false;
-				mBluetoothLeService.close();
-				characteristic=null;
-				rssiHandler.removeCallbacks(rssiRunnable);
-				mBluetoothLeService.connect(dataItem.get(index).getMac());
-
-			} else if (BluetoothLeService.ACTION_GATT_SERVICES_DISCOVERED.equals(action)) {
-
-					if(!dataItem.isEmpty())
-					{
-						closepDialog();
-						selectItemdata(index);
-						rssiHandler.postDelayed(rssiRunnable,SCAN_RSSI_TIME);
-
-					}
-
-
-
-
-			} else if (BluetoothLeService.ACTION_DATA_AVAILABLE.equals(action)) {
-
-			}
-		}
-	};
 	private byte[] hex2byte(byte[] b) {
 		if ((b.length % 2) != 0) {
 			throw new IllegalArgumentException("長度不是偶數");
@@ -739,9 +619,7 @@ public class MainActivity extends Activity
 		return b2;
 	}
 	private void turnled(boolean onoff){
-		byte[] value = new byte[2];
-		value[0] = (byte) 0x00;
-		value[1] =(byte) 0x5a;
+
 
 		if (characteristic != null) {
 			if(onoff) {
@@ -753,13 +631,39 @@ public class MainActivity extends Activity
 				myseekbar.setProgress(100);
 				ledStatus=true;
 			}
-
-//			mBluetoothLeService.writeCharacteristic(characteristic);
-
 		}
 
 	}
+	private Item find_item(BluetoothDevice device){
+		if(!dataItem.isEmpty())
+		{
+			for(Item item:dataItem)
+			{
+				if(item.getDevice().equals(device))return item;
+			}
+		}
+		return null;
 
+	}
+	private void scanLeDevice(final boolean enable) {
+
+		if (enable) {
+			// Stops scanning after a pre-defined scan period.
+			mHandler.postDelayed(new Runnable() {
+				@Override
+				public void run() {
+					mScanning = false;
+					mBluetoothAdapter.stopLeScan(mLeScanCallback);
+				}
+			}, SCAN_PERIOD);
+			mScanning = true;
+			mBluetoothAdapter.startLeScan(mLeScanCallback);
+		} else {
+			mScanning = false;
+			mBluetoothAdapter.stopLeScan(mLeScanCallback);
+		}
+
+	}
 	private BluetoothGattCharacteristic getCuriocharacteristic(BluetoothGatt gat){
 		BluetoothGattService mgat=mBluetoothLeService.getGattserver(gat,
 				BluetoothLeService.UUID_CRIO_LIGHT_DEVICE);
@@ -778,19 +682,51 @@ public class MainActivity extends Activity
 
 		return intentFilter;
 	}
-	private Item find_item(BluetoothDevice device){
-		if(!dataItem.isEmpty())
-		{
-			for(Item item:dataItem)
-			{
-				if(item.getDevice().equals(device))return item;
+	//廣播
+	private final BroadcastReceiver mGattUpdateReceiver = new BroadcastReceiver() {
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			final String action = intent.getAction();
+			if (BluetoothLeService.ACTION_GATT_CONNECTED.equals(action)) {
+				mConnected = true;
+			} else if (BluetoothLeService.ACTION_GATT_DISCONNECTED.equals(action)) {
+				mConnected = false;
+				mBluetoothLeService.close();
+				characteristic=null;
+				rssiHandler.removeCallbacks(rssiRunnable);
+				mBluetoothLeService.connect(dataItem.get(index).getMac());
+
+			} else if (BluetoothLeService.ACTION_GATT_SERVICES_DISCOVERED.equals(action)) {
+				if(!dataItem.isEmpty())
+				{
+					closepDialog();
+					selectItemdata(index);
+					rssiHandler.postDelayed(rssiRunnable,SCAN_RSSI_TIME);
+				}
+			} else if (BluetoothLeService.ACTION_DATA_AVAILABLE.equals(action)) {
+
 			}
 		}
-		return null;
+	};
+	private BluetoothAdapter.LeScanCallback mLeScanCallback =
+			new BluetoothAdapter.LeScanCallback() {
+				@Override
+				public void onLeScan(final BluetoothDevice device, int rssi, final byte[] scanRecord) {
+					runOnUiThread(new Runnable() {
+						@Override
+						public void run()
+						{
+							//如果找到的是curio的裝置就連接裝置,並取得控制光源的服務
+							if (getmufid(device, curiomaf, scanRecord) != null)
+							{
+								if(dataItem.size()==1)
+									mBluetoothLeService.connect(device.getAddress());
+							}
+						}
+					});
+				}
 
-	}
 
-
-
+			};
 
 }

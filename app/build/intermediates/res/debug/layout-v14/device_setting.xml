@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent"
+    android:weightSum="1"
+    android:background="#33172ab9">
+
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/imageView"
+        android:src="@mipmap/superlighttable"
+        android:layout_weight="0.73"
+        android:scaleType="fitXY"
+        android:minHeight="200dp"
+        android:minWidth="200dp"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="93dp" />
+
+    <Switch
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/shake_title"
+        android:id="@+id/shakeSwitch"
+        android:textColor="#ffffff"
+        android:layout_below="@+id/editText"
+        android:layout_centerHorizontal="true" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:id="@+id/editText"
+        android:inputType="textPersonName"
+        android:layout_below="@+id/imageView"
+        android:layout_centerHorizontal="true" />
+
+    <Switch
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="離開關閉"
+        android:id="@+id/rssiSwitch"
+        android:layout_marginTop="59dp"
+        android:layout_below="@+id/shakeSwitch"
+        android:layout_alignLeft="@+id/shakeSwitch"
+        android:layout_alignStart="@+id/shakeSwitch" />
+
+</RelativeLayout>
+<!-- From: file:/D:/GitHub/CurioRemotLED/app/src/main/res/layout-v14/device_setting.xml -->
