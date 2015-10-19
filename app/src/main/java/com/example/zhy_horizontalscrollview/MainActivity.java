@@ -46,12 +46,12 @@ public class MainActivity extends Activity
 	private final static String TAG =MainActivity.class.getName();
 	private static final int SCAN_PERIOD = 5000;
 	private static final int SCAN_TIME = 10000;
+	private static final int SCAN_RSSI_TIME=2000;
+	private static final int SENSOR_TIME_MIN_GAP = 1500;//ms
 	private static final int REQUEST_ENABLE_BT = 1;
 	private static final int SETTING_RESULT=777;
 	private static final int RSSI_MAX_VAUL=93;
-	private static final int SCAN_RSSI_TIME=2000;
 	private static final int SENSOR_SHAKE = 19;
-	private static final int SENSOR_TIME_MIN_GAP = 1500;//ms
 	private static final int curiomaf=0x7dcc;
 	private static final int DATA_TYPE_FLAGS = 0x01;
 	private static final int DATA_TYPE_SERVICE_UUIDS_16_BIT_PARTIAL = 0x02;
