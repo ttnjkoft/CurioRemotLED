@@ -44,7 +44,8 @@ import com.example.zhy_horizontalscrollview.MyHorizontalScrollView.OnItemClickLi
 public class MainActivity extends Activity
 {
 	private final static String TAG =MainActivity.class.getName();
-	private static final int SCAN_PERIOD = 10000;
+	private static final int SCAN_PERIOD = 5000;
+	private static final int SCAN_TIME = 10000;
 	private static final int REQUEST_ENABLE_BT = 1;
 	private static final int SETTING_RESULT=777;
 	private static final int RSSI_MAX_VAUL=93;
@@ -135,6 +136,7 @@ public class MainActivity extends Activity
 		setContentView(R.layout.activity_main);
 		findViews();
 		checkBle();
+		handler.postDelayed(runnable,SCAN_TIME);
 		Intent gattServiceIntent = new Intent(this, BluetoothLeService.class);
 		bindService(gattServiceIntent, mServiceConnection, BIND_AUTO_CREATE);
 	}
@@ -232,9 +234,12 @@ public class MainActivity extends Activity
 		runnable=new Runnable() {
 			@Override
 			public void run() {
-				if(dataItem.isEmpty())
+
+//				if(dataItem.isEmpty())
 					scanLeDevice(true);
+			handler.postDelayed(this,SCAN_TIME);
 			}
+
 		};
 
 		mImg.setOnLongClickListener(new View.OnLongClickListener() {
@@ -648,6 +653,7 @@ public class MainActivity extends Activity
 	private void scanLeDevice(final boolean enable) {
 
 		if (enable) {
+
 			// Stops scanning after a pre-defined scan period.
 			mHandler.postDelayed(new Runnable() {
 				@Override
@@ -656,6 +662,12 @@ public class MainActivity extends Activity
 					mBluetoothAdapter.stopLeScan(mLeScanCallback);
 				}
 			}, SCAN_PERIOD);
+			if(characteristic!=null)
+			{
+				Item item=dataItem.get(index);
+				dataItem.clear();
+				dataItem.add(item);
+			}
 			mScanning = true;
 			mBluetoothAdapter.startLeScan(mLeScanCallback);
 		} else {
